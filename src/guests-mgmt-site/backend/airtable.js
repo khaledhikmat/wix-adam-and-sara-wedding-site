@@ -2,134 +2,128 @@ import {getSecret} from 'wix-secrets-backend';
 import wixCaptcha from 'wix-captcha-backend';
 import {fetch} from 'wix-fetch';
 
-const SAMPLE = false;
-
 export async function retrievePartyRegistrations(partyId) {
     let partyRegistrations = [];
 
     try {
         // Load from AirTable only if a party name exists as a query parameter
-        if (!SAMPLE) {
-            // Get guests from AirTable
-            // I was not able to filter by formula unfortunately....linked records cannot be filtered by formula!!!
-            let httpResponse = await fetch("https://api.airtable.com/v0/appbbqhH1dJLClmD2/Guests?maxRecords=300&view=Grid%20view&fields%5B%5D=Name&fields%5B%5D=Party&fields%5B%5D=partyName&fields%5B%5D=Meal&fields%5B%5D=Confirmed", {
-                "method": "GET", 
-                "headers": {
-                    "Content-Type": "application/json",
-                    "Authorization": "Bearer " + await getSecret('AT_API_KEY')
-                }
-            });
-            
-            if (!httpResponse.ok) {
-                throw 'API Call to retrieve guests returned ' + httpResponse.status;
+        // Get guests from AirTable
+        // I was not able to filter by formula unfortunately....linked records cannot be filtered by formula!!!
+        let httpResponse = await fetch("https://api.airtable.com/v0/appbbqhH1dJLClmD2/Guests?maxRecords=300&view=Grid%20view&fields%5B%5D=Name&fields%5B%5D=Party&fields%5B%5D=partyName&fields%5B%5D=Meal&fields%5B%5D=Confirmed", {
+            "method": "GET", 
+            "headers": {
+                "Content-Type": "application/json",
+                "Authorization": "Bearer " + await getSecret('AT_API_KEY')
             }
-
-            let json = await httpResponse.json();
-            let guestRecords = json.records;
-
-            // Get meals from AirTable
-            httpResponse = await fetch("https://api.airtable.com/v0/appbbqhH1dJLClmD2/Meal?maxRecords=10&view=Grid%20view&fields%5B%5D=Name", {
-                "method": "get", 
-                "headers": {
-                    "Content-Type": "application/json",
-                    "Authorization": "Bearer " + await getSecret('AT_API_KEY')
-                }
-            });
-
-            if (!httpResponse.ok) {
-                throw 'API Call to retrieve available meals returned ' + httpResponse.status;
-            }
-
-            json = await httpResponse.json();
-            let mealRecords = json.records;
-
-            let meals = [];
-            let defaultMealId = '';
-            for (let i = 0; i < mealRecords.length; i++) {		
-                let record = mealRecords[i];
-                let meal = {};
-                meal.value = record.id;
-                defaultMealId = record.id;
-                // Ignore the meals that do not have a name
-                if (record.fields.Name) {
-                    meal.label = getMealLabel(record.fields.Name);
-                    meals.push(meal);
-                }
-            }
-
-            let registrations = [];
-            for (let i = 0; i < guestRecords.length; i++) {		
-                let record = guestRecords[i];
-                let reg = {};
-                reg._id = record.id;
-                //Ignore the guests that do not have a name or party
-                if (record.fields.Name &&
-                    typeof record.fields.Party != 'undefined' && 
-                    typeof record.fields.Party[0] != 'undefined' &&
-                    typeof record.fields.partyName != 'undefined' && 
-                    typeof record.fields.partyName[0] != 'undefined'
-                ) {
-                    reg.name = record.fields.Name;
-                    reg.email = record.fields.Email || '';
-                    reg.partyId = record.fields.Party[0];
-                    reg.party = record.fields.partyName[0];
-                    reg.confirmed = record.fields.Confirmed ? true : false;
-                    reg.meal = record.fields.Meal && record.fields.Meal[0] ? record.fields.Meal[0] : defaultMealId;
-                    reg.meals = meals;
-                    registrations.push(reg);
-                }
-            }
-            
-            //WARNING: Filter (out at the client) the parties only
-            partyRegistrations = partyId ? registrations.filter(item => item.partyId === partyId) : registrations;		
-        } else {
-            partyRegistrations = [
-                {
-                    "_id":"reg1",
-                    "name":"Sample1 LastName",
-                    "email":"khaled.hikmat@gmail.com",
-                    "partyId": "",
-                    "meal":"Beef",
-                    "confirmed":true,
-                    "meals": [
-                        {"label": "Fish 🐟", "value": "Fish"},
-                        {"label": "Beef 🐄", "value": "Beef"},
-                        {"label": "Chicken 🐔", "value": "Chicken"}                
-                    ]
-                },
-                {
-                    "_id":"reg2",
-                    "name":"Sample2 LastName",
-                    "email":"khaled.hikmat@gmail.com",
-                    "partyId": "",
-                    "meal":"Chicken",
-                    "confirmed":true,
-                    "meals": [
-                        {"label": "Fish 🐟", "value": "Fish"},
-                        {"label": "Beef 🐄", "value": "Beef"},
-                        {"label": "Chicken 🐔", "value": "Chicken"}                
-                    ]
-                },
-                {
-                    "_id":"reg3",
-                    "name":"Sample3 LastName",
-                    "partyId": "",
-                    "meal":"Fish",
-                    "confirmed":false,
-                    "meals": [
-                        {"label": "Fish 🐟", "value": "Fish"},
-                        {"label": "Beef 🐄", "value": "Beef"},
-                        {"label": "Chicken 🐔", "value": "Chicken"}                
-                    ]
-                }
-            ];
+        });
+        
+        if (!httpResponse.ok) {
+            throw 'API Call to retrieve guests returned ' + httpResponse.status;
         }
+
+        let json = await httpResponse.json();
+        let guestRecords = json.records;
+
+        // Get meals from AirTable
+        httpResponse = await fetch("https://api.airtable.com/v0/appbbqhH1dJLClmD2/Meal?maxRecords=10&view=Grid%20view&fields%5B%5D=Name", {
+            "method": "get", 
+            "headers": {
+                "Content-Type": "application/json",
+                "Authorization": "Bearer " + await getSecret('AT_API_KEY')
+            }
+        });
+
+        if (!httpResponse.ok) {
+            throw 'API Call to retrieve available meals returned ' + httpResponse.status;
+        }
+
+        json = await httpResponse.json();
+        let mealRecords = json.records;
+
+        let meals = [];
+        let defaultMealId = '';
+        for (let i = 0; i < mealRecords.length; i++) {		
+            let record = mealRecords[i];
+            let meal = {};
+            meal.value = record.id;
+            defaultMealId = record.id;
+            // Ignore the meals that do not have a name
+            if (record.fields.Name) {
+                meal.label = getMealLabel(record.fields.Name);
+                meals.push(meal);
+            }
+        }
+
+        let registrations = [];
+        for (let i = 0; i < guestRecords.length; i++) {		
+            let record = guestRecords[i];
+            let reg = {};
+            reg._id = record.id;
+            //Ignore the guests that do not have a name or party
+            if (record.fields.Name &&
+                typeof record.fields.Party != 'undefined' && 
+                typeof record.fields.Party[0] != 'undefined' &&
+                typeof record.fields.partyName != 'undefined' && 
+                typeof record.fields.partyName[0] != 'undefined'
+            ) {
+                reg.name = record.fields.Name;
+                reg.email = record.fields.Email || '';
+                reg.partyId = record.fields.Party[0];
+                reg.party = record.fields.partyName[0];
+                reg.confirmed = record.fields.Confirmed ? true : false;
+                reg.meal = record.fields.Meal && record.fields.Meal[0] ? record.fields.Meal[0] : defaultMealId;
+                reg.meals = meals;
+                registrations.push(reg);
+            }
+        }
+        
+        //WARNING: Filter (out at the client) the parties only
+        partyRegistrations = partyId ? registrations.filter(item => item.partyId === partyId) : registrations;		
     }
     catch (error) {
         throw error;
     }
 
     return partyRegistrations;
+}
+
+export async function retrieveMeals() {
+    let meals = [];
+
+    try {
+        // Get meals from AirTable
+        let httpResponse = await fetch("https://api.airtable.com/v0/appbbqhH1dJLClmD2/Meal?maxRecords=10&view=Grid%20view", {
+            "method": "get", 
+            "headers": {
+                "Content-Type": "application/json",
+                "Authorization": "Bearer " + await getSecret('AT_API_KEY')
+            }
+        });
+
+        if (!httpResponse.ok) {
+            throw 'API Call to retrieve available meals returned ' + httpResponse.status;
+        }
+
+        let json = await httpResponse.json();
+        let mealRecords = json.records;
+
+        for (let i = 0; i < mealRecords.length; i++) {		
+            let record = mealRecords[i];
+            let meal = {};
+            meal._id = record.id;
+            // Ignore the meals that do not have a name
+            if (record.fields.Name) {
+                meal.name = record.fields.Name;
+                meal.description = record.fields.Description || '';
+                meal.imageUrl = record.fields.Attachments && record.fields.Attachments.length > 0 ? record.fields.Attachments[0].url : '';
+                meals.push(meal);
+            }
+        }
+    } catch (error) {
+        throw error;
+    }
+
+    return meals;
 }
 
 export async function retrieveParties() {
@@ -197,18 +191,16 @@ export async function updatePartyRegistrations(data) {
         }
         
         // Update AirTable - do not use AirTable if hard-coded sample data
-        if (!SAMPLE) {
-            let httpResponse = await fetch( "https://api.airtable.com/v0/appbbqhH1dJLClmD2/Guests", {
-                "method": "PATCH",
-                "headers": {
-                    "Content-Type": "application/json",
-                    "Authorization": "Bearer " + await getSecret('AT_API_KEY')
-                },
-                "body": JSON.stringify(payload)
-            });
-            if (!httpResponse.ok) {
-                throw 'API Call to update party registrations returned ' + httpResponse.status;
-            }
+        let httpResponse = await fetch( "https://api.airtable.com/v0/appbbqhH1dJLClmD2/Guests", {
+            "method": "PATCH",
+            "headers": {
+                "Content-Type": "application/json",
+                "Authorization": "Bearer " + await getSecret('AT_API_KEY')
+            },
+            "body": JSON.stringify(payload)
+        });
+        if (!httpResponse.ok) {
+            throw 'API Call to update party registrations returned ' + httpResponse.status;
         }
     }
     catch (error) {
@@ -236,18 +228,16 @@ export async function addPartyGuests(token, partyId, newGuests) {
         }
         
         // Update AirTable - do not use AirTable if hard-coded sample data
-        if (!SAMPLE) {
-            let httpResponse = await fetch( "https://api.airtable.com/v0/appbbqhH1dJLClmD2/Guests", {
-                "method": "POST",
-                "headers": {
-                    "Content-Type": "application/json",
-                    "Authorization": "Bearer " + await getSecret('AT_API_KEY')
-                },
-                "body": JSON.stringify(payload)
-            });
-            if (!httpResponse.ok) {
-                throw 'API Call to add parties links returned ' + httpResponse.status;
-            }
+        let httpResponse = await fetch( "https://api.airtable.com/v0/appbbqhH1dJLClmD2/Guests", {
+            "method": "POST",
+            "headers": {
+                "Content-Type": "application/json",
+                "Authorization": "Bearer " + await getSecret('AT_API_KEY')
+            },
+            "body": JSON.stringify(payload)
+        });
+        if (!httpResponse.ok) {
+            throw 'API Call to add parties links returned ' + httpResponse.status;
         }
     }
     catch (error) {

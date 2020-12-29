@@ -4,7 +4,7 @@
 
 import wixLocation from 'wix-location';
 import {session} from 'wix-storage';
-import {retrievePartyRegistrations, addPartyGuests, updatePartyRegistrations, } from 'backend/airtable';
+import {retrievePartyRegistrations, addPartyGuests, updatePartyRegistrations} from 'backend/airtable';
 import {getSamplePartyId, getRsvpHeaderMessage, getRsvpNotAvailableMessage, getNoGuestsWithPartyMessage, getGuestValidationMessage, isSamplePartyId} from 'backend/settings';
 
 async function getPartyId() {
@@ -31,6 +31,8 @@ async function getPartyId() {
 async function retrievePartyGuests() {
     try {
         $w("#spinner").show();
+        $w("#txtError").text = '';
+        $w("#txtError").hide();
 
         let partyId = await getPartyId();
         if (!partyId) {
