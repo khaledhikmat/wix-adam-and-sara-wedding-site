@@ -130,6 +130,7 @@ $w.onReady(async function () {
             $w("#txtNewGuest1Name").show();
             $w("#txtNewGuest1ValidationError").show();
             $w("#cbNewGuest1AgeGroup").show();
+            $w("#btnConfirmAddGuests").disable();
             $w("#btnConfirmAddGuests").show();
             $w("#btnCancelAddGuests").show();
         }
@@ -138,7 +139,11 @@ $w.onReady(async function () {
         }
 	});
 
-	$w("#btnConfirmAddGuests").onClick( async (event) =>  {
+    $w("#captchaAddGuests").onVerified(() => {
+        $w("#btnConfirmAddGuests").enable();
+      } );
+
+    $w("#btnConfirmAddGuests").onClick( async (event) =>  {
         let validationError  = '';
 
         try {
