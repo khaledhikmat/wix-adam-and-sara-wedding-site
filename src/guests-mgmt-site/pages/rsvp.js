@@ -69,11 +69,6 @@ $w.onReady(async function () {
     $w("#txtNewGuest1Name").hide();
     $w("#txtNewGuest1ValidationError").hide();
     $w("#cbNewGuest1AgeGroup").hide();
-    $w("#cbNewGuest1Gender").hide();
-    $w("#txtNewGuest2Name").hide();
-    $w("#txtNewGuest2ValidationError").hide();
-    $w("#cbNewGuest2AgeGroup").hide();
-    $w("#cbNewGuest2Gender").hide();
     $w("#btnConfirmAddGuests").hide();
     $w("#btnCancelAddGuests").hide();
     $w("#containerThankYou").hide();
@@ -129,19 +124,12 @@ $w.onReady(async function () {
             $w("#txtError").hide();
             $w("#btnMoreGuests").disable();
             $w("#txtNewGuest1Name").value = '';
-            $w("#txtNewGuest2Name").value = '';
             $w("#txtNewGuest1ValidationError").text = '';
-            $w("#txtNewGuest2ValidationError").text = '';
             $w("#captchaAddGuests").show();
             $w("#captchaAddGuests").reset();
             $w("#txtNewGuest1Name").show();
             $w("#txtNewGuest1ValidationError").show();
             $w("#cbNewGuest1AgeGroup").show();
-            $w("#cbNewGuest1Gender").show();
-            $w("#txtNewGuest2Name").show();
-            $w("#txtNewGuest2ValidationError").show();
-            $w("#cbNewGuest2AgeGroup").show();
-            $w("#cbNewGuest2Gender").show();
             $w("#btnConfirmAddGuests").show();
             $w("#btnCancelAddGuests").show();
         }
@@ -160,22 +148,15 @@ $w.onReady(async function () {
             $w("#btnMoreGuests").disable();
             $w("#btnConfirmAddGuests").disable();
             $w("#txtNewGuest1ValidationError").text = '';
-            $w("#txtNewGuest2ValidationError").text = '';
             $w("#txtNewGuest1ValidationError").hide();
-            $w("#txtNewGuest2ValidationError").hide();
 
             // Validate
             // Sanitize the input for alpha or 
             var reg = /^[A-Za-z\s]+$/;
-            ["Adam", "Ada m", "A1dam", "A!dam", 'sdasd 213123&*&*&'].forEach(function (str) {
-                console.log(reg.test(str + "\n"));
-            });
-            if (!$w("#txtNewGuest1Name").value && !$w("#txtNewGuest2Name").value) {
+            if (!$w("#txtNewGuest1Name").value) {
                 $w("#txtNewGuest1ValidationError").text = await getGuestValidationMessage();
                 $w("#txtNewGuest1ValidationError").show();
-                $w("#txtNewGuest2ValidationError").text = await getGuestValidationMessage();
-                $w("#txtNewGuest2ValidationError").show();
-                validationError = 'One or both guest names must be incldued!';        
+                validationError = 'Guest name must be incldued!';        
             }    
 
             if ($w("#txtNewGuest1Name").value) {
@@ -186,29 +167,13 @@ $w.onReady(async function () {
                 }
             }
 
-            if ($w("#txtNewGuest2Name").value) {
-                if (!reg.test($w("#txtNewGuest2Name").value)) {
-                    $w("#txtNewGuest2ValidationError").text = await getGuestValidationMessage();
-                    $w("#txtNewGuest2ValidationError").show();
-                    validationError = 'Guest 2 name must be alpha!';        
-                }
-            }
-
             if (!validationError) {
                 let newGuests = [];
                 if ($w("#txtNewGuest1Name").value) {
                     let guest = {
                         name: $w("#txtNewGuest1Name").value,
-                        ageGroup: $w("#cbNewGuest1AgeGroup").selectedIndices.length > 0 ? 'Adult' : 'Child',
-                        gender: $w("#cbNewGuest1Gender").selectedIndices.length > 0 ? 'Male' : 'Female'
-                    };
-                    newGuests.push(guest);
-                }
-                if ($w("#txtNewGuest2Name").value) {
-                    let guest = {
-                        name: $w("#txtNewGuest2Name").value,
-                        ageGroup: $w("#cbNewGuest2AgeGroup").selectedIndices.length > 0 ? 'Adult' : 'Child',
-                        gender: $w("#cbNewGuest2Gender").selectedIndices.length > 0 ? 'Male' : 'Female'
+                        ageGroup: $w("#cbNewGuest1AgeGroup").selectedIndices.length > 0 ? 'Child' : 'Adult',
+                        gender: ''
                     };
                     newGuests.push(guest);
                 }
@@ -230,14 +195,8 @@ $w.onReady(async function () {
                 $w("#captchaAddGuests").hide();
                 $w("#txtNewGuest1Name").hide();
                 $w("#cbNewGuest1AgeGroup").hide();
-                $w("#cbNewGuest1Gender").hide();
-                $w("#txtNewGuest2Name").hide();
                 $w("#txtNewGuest1ValidationError").text = '';
-                $w("#txtNewGuest2ValidationError").text = '';
                 $w("#txtNewGuest1ValidationError").hide();
-                $w("#txtNewGuest2ValidationError").hide();
-                $w("#cbNewGuest2AgeGroup").hide();
-                $w("#cbNewGuest2Gender").hide();
                 $w("#btnConfirmAddGuests").hide();
                 $w("#btnCancelAddGuests").hide();
             } else {
@@ -258,14 +217,8 @@ $w.onReady(async function () {
             $w("#captchaAddGuests").reset();
             $w("#txtNewGuest1Name").hide();
             $w("#cbNewGuest1AgeGroup").hide();
-            $w("#cbNewGuest1Gender").hide();
-            $w("#txtNewGuest2Name").hide();
             $w("#txtNewGuest1ValidationError").text = '';
-            $w("#txtNewGuest2ValidationError").text = '';
             $w("#txtNewGuest1ValidationError").hide();
-            $w("#txtNewGuest2ValidationError").hide();
-            $w("#cbNewGuest2AgeGroup").hide();
-            $w("#cbNewGuest2Gender").hide();
             $w("#btnConfirmAddGuests").hide();
             $w("#btnCancelAddGuests").hide();
         }
