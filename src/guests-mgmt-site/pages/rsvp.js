@@ -37,8 +37,8 @@ async function retrievePartyGuests() {
         let partyId = await getPartyId();
         if (!partyId) {
             throw (await getRsvpNotAvailableMessage());
-        }        
-
+        }  
+        
         let data = await retrievePartyRegistrations(partyId);
         if (data.length > 0) {
             $w("#txtRegistrationMessage").show();
@@ -71,7 +71,6 @@ $w.onReady(async function () {
     $w("#cbNewGuest1AgeGroup").hide();
     $w("#btnConfirmAddGuests").hide();
     $w("#btnCancelAddGuests").hide();
-    $w("#containerThankYou").hide();
     $w("#txtThankYou").hide();
     $w("#txtError").text = "";
     $w("#txtError").hide();
@@ -100,11 +99,11 @@ $w.onReady(async function () {
             $w("#spinner").show();
             $w("#txtError").text = '';
             $w("#txtError").hide();
+            $w("#txtThankYou").hide();
             $w("#btnUpdateGuests").disable();
             $w("#btnMoreGuests").disable();
             const data = $w("#guestsRepeater").data;
             await updatePartyRegistrations(data);
-            $w("#containerThankYou").show();
             $w("#txtThankYou").show();
             //$w("#btnGift").show(); // Adam did not want this!!
         }
@@ -122,6 +121,7 @@ $w.onReady(async function () {
         try {
             $w("#txtError").text = '';
             $w("#txtError").hide();
+            $w("#txtThankYou").hide();
             $w("#btnMoreGuests").disable();
             $w("#txtNewGuest1Name").value = '';
             $w("#txtNewGuest1ValidationError").text = '';
@@ -149,6 +149,7 @@ $w.onReady(async function () {
         try {
             $w("#txtError").text = '';
             $w("#txtError").hide();
+            $w("#txtThankYou").hide();
             $w("#spinner").show();
             $w("#btnMoreGuests").disable();
             $w("#btnConfirmAddGuests").disable();
@@ -216,6 +217,7 @@ $w.onReady(async function () {
         try {
             $w("#txtError").text = '';
             $w("#txtError").hide();
+            $w("#txtThankYou").hide();
             $w("#btnMoreGuests").enable();
             $w("#btnConfirmAddGuests").enable();
             $w("#captchaAddGuests").hide();

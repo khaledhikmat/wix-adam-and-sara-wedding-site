@@ -3,8 +3,8 @@ import { retrieveMeals } from 'backend/airtable';
 import {isMeals} from 'backend/settings';
 
 async function retrieveMealsAsync() {
-    if ((await isMeals()) === 'true') {
-        $w("#txtWorkInProgress").hide();
+    // if ((await isMeals()) === 'true') {
+        // $w("#txtWorkInProgress").hide();
         $w("#mealsRepeater").hide();
 
         try {
@@ -26,10 +26,10 @@ async function retrieveMealsAsync() {
         } finally {
             $w("#spinner").hide();
         }
-    } else {
-        $w("#txtWorkInProgress").show();
-        $w("#mealsRepeater").hide();
-    }
+    // } else {
+        // $w("#txtWorkInProgress").show();
+        // $w("#mealsRepeater").hide();
+    // }
 }
 
 $w.onReady(async function () {

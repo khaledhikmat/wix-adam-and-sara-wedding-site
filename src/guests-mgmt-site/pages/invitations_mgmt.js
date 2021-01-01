@@ -26,7 +26,7 @@ async function generateEmails(partyName) {
     parties.forEach(async (party) => {
         try {
             let partyHtml = html;
-            partyHtml = partyHtml.replace('{{registration-link}}', wixLocation.baseUrl + '/registration?pid=' + party.id);
+            partyHtml = partyHtml.replace('{{registration-link}}', wixLocation.baseUrl + '/rsvp?pid=' + party.id);
             //console.log(partyHtml);
 
             //Use sendGrid to send email
@@ -61,7 +61,7 @@ async function generateLinks(partyName) {
     parties.forEach((party) => {
         let item = {};
         item.id = party.id;
-        item.link = wixLocation.baseUrl + '/registration?pid=' + party.id;
+        item.link = wixLocation.baseUrl + '/rsvp?pid=' + party.id;
         items.push(item)
     });
     //console.log(items);

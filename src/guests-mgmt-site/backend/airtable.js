@@ -6,23 +6,36 @@ export async function retrievePartyRegistrations(partyId) {
     let partyRegistrations = [];
 
     try {
-        // Load from AirTable only if a party name exists as a query parameter
-        // Get guests from AirTable
-        // I was not able to filter by formula unfortunately....linked records cannot be filtered by formula!!!
-        let httpResponse = await fetch("https://api.airtable.com/v0/appbbqhH1dJLClmD2/Guests?maxRecords=300&view=Grid%20view&fields%5B%5D=Name&fields%5B%5D=Party&fields%5B%5D=partyName&fields%5B%5D=Meal&fields%5B%5D=Confirmed", {
-            "method": "GET", 
-            "headers": {
-                "Content-Type": "application/json",
-                "Authorization": "Bearer " + await getSecret('AT_API_KEY')
-            }
-        });
-        
-        if (!httpResponse.ok) {
-            throw 'API Call to retrieve guests returned ' + httpResponse.status;
-        }
+        let guestRecords = [];
+        let offset = '';
+        let index = 0;
+        let httpResponse;
+        let json;
 
-        let json = await httpResponse.json();
-        let guestRecords = json.records;
+        while (offset || index == 0) {
+            // Load from AirTable only if a party name exists as a query parameter
+            // Get guests from AirTable
+            // I was not able to filter by formula unfortunately....linked records cannot be filtered by formula!!!
+            let url = "https://api.airtable.com/v0/appbbqhH1dJLClmD2/Guests?maxRecords=300&view=Grid%20view&fields%5B%5D=Name&fields%5B%5D=Party&fields%5B%5D=partyName&fields%5B%5D=Meal&fields%5B%5D=Confirmed" + (offset ? "&offset=" + offset : "");
+            console.log('Offset: ' + offset + ' - index: ' + index + ' - URL: ' + url);
+
+            httpResponse = await fetch(url, {
+                "method": "GET", 
+                "headers": {
+                    "Content-Type": "application/json",
+                    "Authorization": "Bearer " + await getSecret('AT_API_KEY')
+                }
+            });
+            
+            if (!httpResponse.ok) {
+                throw 'API Call to retrieve guests returned ' + httpResponse.status;
+            }
+
+            json = await httpResponse.json();
+            offset = json.offset || '';
+            guestRecords.push(...json.records);
+            index++;
+        }
 
         // Get meals from AirTable
         httpResponse = await fetch("https://api.airtable.com/v0/appbbqhH1dJLClmD2/Meal?maxRecords=10&view=Grid%20view&fields%5B%5D=Name", {
@@ -310,15 +323,6 @@ export async function updatePartyLinks(data) {
 //*** PRIVATE */
 function getMealLabel(name) {
     return name;
-    // if (name === 'Fish') {
-    //     return "Fish 🐟";
-    // } else if (name === 'Chicken') {
-    //     return "Chicken 🐔";
-    // } else if (name === 'Beef') {
-    //     return "Beef 🐄";
-    // } else {
-    //     return "Pizza 🍕";
-    // }
 }
 
 

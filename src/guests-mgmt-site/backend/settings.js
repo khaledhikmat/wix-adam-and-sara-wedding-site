@@ -12,6 +12,10 @@ export async function isMeals() {
     return await getSecret('MEALS_ON');
 }
 
+export async function isWeddingAlbum() {
+    return await getSecret('ALBUM_WEDDING_ON');
+}
+
 export async function getGiftsHeaderMessage() {
     let message = '';
     
