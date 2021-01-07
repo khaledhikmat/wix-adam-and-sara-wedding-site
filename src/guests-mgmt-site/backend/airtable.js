@@ -197,6 +197,7 @@ export async function updatePartyRegistrations(data) {
             let record = {}; 
             record.id = item._id;
             record.fields = {};
+            record.fields['RSVP Date'] = new Date().toISOString();
             record.fields.Confirmed = item.confirmed;
             record.fields.Meal = [];
             record.fields.Meal.push(item.meal);
@@ -299,6 +300,8 @@ export async function updatePartyLinks(data) {
             record.id = item.id;
             record.fields = {};
             record.fields.Link = item.link;
+            record.fields['Whatsapp Message'] = 'Please RSVP by February 6th, 2021 using this link: ' + item.link + '\n' + 
+            'To browse our wedding site, please use this link: https://adamandsara.wedding';
             payload.records.push(record);
         }
         

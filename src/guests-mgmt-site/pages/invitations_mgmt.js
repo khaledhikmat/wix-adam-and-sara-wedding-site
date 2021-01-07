@@ -4,7 +4,7 @@ import {retrievePartiesForEmail, retrievePartiesForLink, updatePartyEmailDates, 
 import {email} from 'backend/sendgrid';
 
 const INVITATION_EMAIL_TEMPLATE_FILE_NAME = '515ba6_b1275b614eb64e8ca6978bbc9f4d834a.txt';
-const INVITATION_EMAIL_TEMPLATE_FILE_URL = 'https://515ba6a9-04d9-40b0-b12a-87877f07f4b8.usrfiles.com/ugd/515ba6_82b93c70165c4e7690e87fbc235ea05c.txt';
+const INVITATION_EMAIL_TEMPLATE_FILE_URL = 'https://f56435c6-60e7-44ca-adb4-70f2ad526ffd.usrfiles.com/ugd/f56435_77ae9e3628cd4878a4eb1c4dd237cc6a.txt';
 
 async function generateEmails(partyName) {
     let items = [];
@@ -26,7 +26,7 @@ async function generateEmails(partyName) {
     parties.forEach(async (party) => {
         try {
             let partyHtml = html;
-            partyHtml = partyHtml.replace('{{registration-link}}', wixLocation.baseUrl + '/rsvp?pid=' + party.id);
+            partyHtml = partyHtml.replaceAll('{{registration-link}}', wixLocation.baseUrl + '/rsvp?pid=' + party.id);
             //console.log(partyHtml);
 
             //Use sendGrid to send email
